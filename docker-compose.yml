@@ -1,0 +1,21 @@
+version: '3'
+services:
+  registry:
+    build: registry
+    ports:
+      - "8761:8761"
+    volumes:
+      - /data/gradle:/root/.m2
+#      - /etc/localtime:/etc/localtime
+    entrypoint: ["java","-Dthin.root=/root/.m2", "-Djava.security.egd=file:/dev/./urandom","-jar", "/app.jar"]
+  configserver:
+    image: openjdk:8-jdk-alpine
+    ports:
+      - "7001:7001"
+    environment:
+      TZ: "Asia/Shanghai"
+    volumes:
+      - /data/gradle:/root/.m2
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./config-server/build/libs/config-server-1.0.jar:/app.jar
+    command: sh /entrypoint.sh -d registry:8761 -c 'java -Dthin.root=/root/.m2 -Djava.security.egd=file:/dev/./urandom -jar /app.jar'

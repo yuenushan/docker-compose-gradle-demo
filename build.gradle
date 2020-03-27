@@ -1,0 +1,14 @@
+group 'com.example.cj'
+version '1.0-SNAPSHOT'
+
+subprojects {
+    task('thinJarAndCache') {
+        dependsOn 'clean', 'thinJar'
+        doLast {
+            println("thinCache running...")
+            String myJar = new File(project.getBuildDir().toString() + "/libs").listFiles()[0]
+            String cmd = "java -jar " + myJar + " --thin.root=/data/gradle --thin.dryrun"
+            Runtime.getRuntime().exec(cmd)
+        }
+    }
+}
